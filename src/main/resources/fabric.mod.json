@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "wynnmaze",
+  "version": "${version}",
+  "name": "Wynncraft TCC Maze Helper",
+  "description": "Wynncraft TCC Raid maze exit detector and pathfinder",
+  "authors": [
+    "You"
+  ],
+  "license": "LGPL-3.0",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.wynnmaze.WynnMazeClient"
+    ]
+  },
+  "mixins": [
+    "wynnmaze.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "fabric-api": "*",
+    "minecraft": "1.21.11",
+    "java": ">=21"
+  }
+}

@@ -1,0 +1,12 @@
+# Build directories
+.gradle/
+build/
+
+# data generated while runnung
+run/
+logs/
+
+# IDEs
+.vscode/
+.idea/
+*.iml

@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "com.wynnmaze.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ParticleManagerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
