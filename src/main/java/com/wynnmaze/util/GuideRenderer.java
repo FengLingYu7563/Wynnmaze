@@ -56,7 +56,7 @@ public class GuideRenderer {
 
         double px = mc.player.getX(), pz = mc.player.getZ();
 
-        // 找最近節點，但如果玩家在路徑起點附近（往回走），從頭顯示
+        // 每幀重算最近節點，從那裡開始顯示
         int nearest = 0;
         double nearestDist = Double.MAX_VALUE;
         for (int i = 0; i < guidePath.size(); i++) {
@@ -64,9 +64,6 @@ public class GuideRenderer {
             double d = Math.sqrt(Math.pow(p[0]-px, 2) + Math.pow(p[1]-pz, 2));
             if (d < nearestDist) { nearestDist = d; nearest = i; }
         }
-        // 如果最近節點距離超過 15 格（玩家偏離路線），從頭顯示完整路線
-        if (nearestDist > 15.0) nearest = 0;
-
         List<double[]> visible = guidePath.subList(nearest, guidePath.size());
         if (visible.size() < 2) return;
 
@@ -123,13 +120,15 @@ public class GuideRenderer {
                 distSinceLastArrow = 0;
                 float cx = (float)((a[0]+b[0])/2);
                 float cz = (float)((a[1]+b[1])/2);
+                // 用角度計算箭翼
                 float arrowLen = 2.0f;
-                float arrowWidth = cfg.arrowWidth * 0.15f;
+                float angleRad = (float)Math.toRadians(cfg.arrowAngle);
+                float wingLen = arrowLen / (float)Math.cos(angleRad);
                 float tipX = cx + nx*arrowLen, tipZ = cz + nz*arrowLen;
-                float leftX = cx - nx*arrowLen + lx*arrowWidth;
-                float leftZ = cz - nz*arrowLen + lz*arrowWidth;
-                float rightX = cx - nx*arrowLen - lx*arrowWidth;
-                float rightZ = cz - nz*arrowLen - lz*arrowWidth;
+                float leftX = tipX - nx*wingLen*(float)Math.cos(angleRad) + lx*wingLen*(float)Math.sin(angleRad);
+                float leftZ = tipZ - nz*wingLen*(float)Math.cos(angleRad) + lz*wingLen*(float)Math.sin(angleRad);
+                float rightX = tipX - nx*wingLen*(float)Math.cos(angleRad) - lx*wingLen*(float)Math.sin(angleRad);
+                float rightZ = tipZ - nz*wingLen*(float)Math.cos(angleRad) - lz*wingLen*(float)Math.sin(angleRad);
                 float alx = leftX-tipX, alz = leftZ-tipZ;
                 float aln = (float)Math.sqrt(alx*alx+alz*alz);
                 float anx = aln>0?alx/aln:0, anz = aln>0?alz/aln:0;

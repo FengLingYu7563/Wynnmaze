@@ -43,7 +43,7 @@ public class WayfindingManager {
                 // 從最近節點之後繼續
                 List<int[]> pts = RoadManager.ROADS.get(nearestRoad);
                 if (pts != null) {
-                    for (int i = nearestNode + 1; i < pts.size(); i++) {
+                    for (int i = nearestNode; i < pts.size(); i++) {
                         path.add(new double[]{pts.get(i)[0], pts.get(i)[1]});
                     }
                 }

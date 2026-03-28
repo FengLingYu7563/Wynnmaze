@@ -67,6 +67,10 @@ public class ConfigScreen extends Screen {
         addDrawableChild(makeSlider(ctrlX, y, sliderW, cfg.arrowSpacing / 30.0, v -> cfg.arrowSpacing = (float)(v * 30)));
         y += 26;
 
+        // 箭翼角度
+        addDrawableChild(makeSlider(ctrlX, y, sliderW, cfg.arrowAngle / 90.0, v -> cfg.arrowAngle = (float)(v * 90)));
+        y += 26;
+
         // 箭頭透明度
         addDrawableChild(makeSlider(ctrlX, y, sliderW, cfg.arrowAlpha, v -> cfg.arrowAlpha = (float)v));
         y += 36;
@@ -103,6 +107,8 @@ public class ConfigScreen extends Screen {
         ctx.drawTextWithShadow(textRenderer, "箭頭 粗度", labelX, y + 4, 0xFFFFFFFF);
         y += 26;
         ctx.drawTextWithShadow(textRenderer, "箭頭 間距", labelX, y + 4, 0xFFFFFFFF);
+        y += 26;
+        ctx.drawTextWithShadow(textRenderer, "箭翼 角度", labelX, y + 4, 0xFFFFFFFF);
         y += 26;
         ctx.drawTextWithShadow(textRenderer, "箭頭 透明度", labelX, y + 4, 0xFFFFFFFF);
 

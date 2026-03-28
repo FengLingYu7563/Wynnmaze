@@ -43,8 +43,14 @@ public class RoadManager {
             int pStart = json.indexOf("\"points\"", q2);
             if (pStart < 0) break;
             int arrStart = json.indexOf("[", pStart);
-            int arrEnd = json.indexOf("]", json.indexOf("]", arrStart) + 1);
-            if (arrStart < 0 || arrEnd < 0) break;
+            if (arrStart < 0) break;
+            // 找配對的外層 ] ，計算括號深度
+            int depth = 0, arrEnd = -1;
+            for (int k = arrStart; k < json.length(); k++) {
+                if (json.charAt(k) == '[') depth++;
+                else if (json.charAt(k) == ']') { depth--; if (depth == 0) { arrEnd = k; break; } }
+            }
+            if (arrEnd < 0) break;
             String pts = json.substring(arrStart + 1, arrEnd);
             List<int[]> points = new ArrayList<>();
             int pi = 0;

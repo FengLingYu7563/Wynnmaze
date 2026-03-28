@@ -21,6 +21,7 @@ public class GuideConfig {
     public float arrowWidth = 5.0f;
     public float arrowSpacing = 5.0f;
     public float arrowAlpha = 0.9f;
+    public float arrowAngle = 35f;
 
     private static GuideConfig INSTANCE = null;
 

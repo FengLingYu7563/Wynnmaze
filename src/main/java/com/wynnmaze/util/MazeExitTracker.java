@@ -27,7 +27,7 @@ public class MazeExitTracker {
 
     // 出口座標表（從 exits.json 載入）
     private static final List<ExitEntry> EXIT_TABLE = new ArrayList<>();
-    private static final int MATCH_RADIUS = 8;
+    private static final int MATCH_RADIUS = 15;
 
     static { loadExitTable(); }
 

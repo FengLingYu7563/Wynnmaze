@@ -1,128 +1,20 @@
 {
   "routes": [
-    {
-      "exit": "B1",
-      "roads": [
-        "BR1",
-        "BR2"
-      ]
-    },
-    {
-      "exit": "B2",
-      "roads": [
-        "BR1",
-        "BR3"
-      ]
-    },
-    {
-      "exit": "B3",
-      "roads": [
-        "BR1",
-        "BR4",
-        "BR5"
-      ]
-    },
-    {
-      "exit": "B4",
-      "roads": [
-        "BR1",
-        "BR4",
-        "BR6"
-      ]
-    },
-    {
-      "exit": "B5",
-      "roads": [
-        "BR1",
-        "BR4",
-        "BR7"
-      ]
-    },
-    {
-      "exit": "G1",
-      "roads": [
-        "GR1",
-        "GR5",
-        "GR2"
-      ]
-    },
-    {
-      "exit": "G2",
-      "roads": [
-        "GR1",
-        "GR3"
-      ]
-    },
-    {
-      "exit": "G3",
-      "roads": [
-        "GR1",
-        "GR5",
-        "GR4"
-      ]
-    },
-    {
-      "exit": "R1",
-      "roads": [
-        "RR1",
-        "RR2"
-      ]
-    },
-    {
-      "exit": "R2",
-      "roads": [
-        "RR1",
-        "RR3",
-        "RR4"
-      ]
-    },
-    {
-      "exit": "R3",
-      "roads": [
-        "RR1",
-        "RR3",
-        "RR5",
-        "RR6"
-      ]
-    },
-    {
-      "exit": "R4",
-      "roads": [
-        "RR1",
-        "RR3",
-        "RR5",
-        "RR8"
-      ]
-    },
-    {
-      "exit": "R5",
-      "roads": [
-        "RR1",
-        "RR3",
-        "RR5",
-        "RR7"
-      ]
-    },
-    {
-      "exit": "Y1",
-      "roads": [
-        "YR1",
-        "YR3"
-      ]
-    },
-    {
-      "exit": "Y2",
-      "roads": [
-        "YR1",
-        "YR4"
-      ]
-    },
-    {
-      "exit": "Y3",
-      "roads": [
-        "YR1",
-        "YR2"
-      ]
-    }
+    { "exit": "B1", "roads": ["BR1", "BR2"] },
+    { "exit": "B2", "roads": ["BR1", "BR3"] },
+    { "exit": "B3", "roads": ["BR1", "BR4", "BR5"] },
+    { "exit": "B4", "roads": ["BR1", "BR4", "BR6"] },
+    { "exit": "B5", "roads": ["BR1", "BR4", "BR7"] },
+    { "exit": "G1", "roads": ["GR1", "GR5", "GR2"] },
+    { "exit": "G2", "roads": ["GR1", "GR3"] },
+    { "exit": "G3", "roads": ["GR1", "GR5", "GR4"] },
+    { "exit": "R1", "roads": ["RR1", "RR2"] },
+    { "exit": "R2", "roads": ["RR1", "RR3", "RR4"] },
+    { "exit": "R3", "roads": ["RR1", "RR3", "RR5", "RR6"] },
+    { "exit": "R4", "roads": ["RR1", "RR3", "RR5", "RR8"] },
+    { "exit": "R5", "roads": ["RR1", "RR3", "RR5", "RR7"] },
+    { "exit": "Y1", "roads": ["YR1", "YR3"] },
+    { "exit": "Y2", "roads": ["YR1", "YR4"] },
+    { "exit": "Y3", "roads": ["YR1", "YR2"] }
   ]
 }
