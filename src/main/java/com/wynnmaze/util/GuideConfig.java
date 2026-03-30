@@ -22,6 +22,8 @@ public class GuideConfig {
     public float arrowSpacing = 5.0f;
     public float arrowAlpha = 0.9f;
     public float arrowAngle = 35f;
+    // 語言
+    public String language = "en";
 
     private static GuideConfig INSTANCE = null;
 
@@ -41,6 +43,8 @@ public class GuideConfig {
             LoggerFactory.getLogger("wynnmaze").warn("[Wynnmaze] Failed to load guide_config.json, using defaults");
         }
         if (INSTANCE == null) INSTANCE = new GuideConfig();
+        // Apply saved language
+        LangManager.setFromCode(INSTANCE.language);
     }
 
     public void save() {

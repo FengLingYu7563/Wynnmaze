@@ -1,5 +1,6 @@
 package com.wynnmaze.render;
 
+import com.wynnmaze.util.LangManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -44,7 +45,7 @@ public class ColorPickerScreen extends Screen {
     private static final int SW = 16, SG = 4, SCOLS = 10;
 
     public ColorPickerScreen(Screen parent, float r, float g, float b, Consumer<float[]> onConfirm) {
-        super(Text.literal("選擇顏色"));
+        super(Text.literal(LangManager.colorPickerTitle()));
         this.parent = parent;
         this.onConfirm = onConfirm;
         float[] hsv = rgbToHsv(r, g, b);
@@ -97,13 +98,13 @@ public class ColorPickerScreen extends Screen {
         addDrawableChild(hexField);
 
         int btnY = hexY + 26;
-        addDrawableChild(ButtonWidget.builder(Text.literal("確認"), btn -> {
+        addDrawableChild(ButtonWidget.builder(Text.literal(LangManager.confirm()), btn -> {
             float[] rgb = hsvToRgb(hue, saturation, value);
             onConfirm.accept(rgb);
             if (client != null) client.setScreen(parent);
         }).dimensions(cx - 55, btnY, 50, 20).build());
 
-        addDrawableChild(ButtonWidget.builder(Text.literal("取消"), btn -> {
+        addDrawableChild(ButtonWidget.builder(Text.literal(LangManager.cancel()), btn -> {
             if (client != null) client.setScreen(parent);
         }).dimensions(cx + 5, btnY, 50, 20).build());
     }
@@ -111,7 +112,7 @@ public class ColorPickerScreen extends Screen {
     @Override
     public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
         ctx.fill(0, 0, width, height, 0xCC000000);
-        ctx.drawCenteredTextWithShadow(textRenderer, "選擇顏色", width / 2, 6, 0xFFFFFFFF);
+        ctx.drawCenteredTextWithShadow(textRenderer, LangManager.colorPickerTitle(), width / 2, 6, 0xFFFFFFFF);
 
         // === 色域 (SV picker) ===
         // 純色（目前色相）
