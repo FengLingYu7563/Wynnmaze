@@ -1,5 +1,6 @@
 package com.wynnmaze.render;
 
+import com.wynnmaze.WynnMazeClient;
 import com.wynnmaze.util.GuideConfig;
 import com.wynnmaze.util.GuideRenderer;
 import com.wynnmaze.util.LangManager;
@@ -17,18 +18,22 @@ public class ConfigScreen extends Screen {
     private float lineR, lineG, lineB;
     private float arrowR, arrowG, arrowB;
 
-    private static final int LX_OFFSET  = -180; // 左邊標籤 x 偏移
-    private static final int CTRL_OFFSET = -10;  // 控件 x 偏移
+    private static final int LX_OFFSET   = -180;
+    private static final int CTRL_OFFSET  = -10;
 
-    // ── Language dropdown state ────────────────────────────────────────────────
+    // ── Language dropdown ──────────────────────────────────────────────────────
     private static final LangManager.Language[] LANGS = LangManager.Language.values();
-    private static final int ITEM_H      = 14;  // height per dropdown row
-    private static final int LANG_BTN_W  = 150;
-    private static final int LANG_BTN_H  = 18;
-
+    private static final int ITEM_H     = 14;
+    private static final int LANG_BTN_W = 150;
+    private static final int LANG_BTN_H = 18;
     private boolean langDropdownOpen = false;
-    // These are set in init() once we know width
     private int langBtnX, langBtnY;
+
+    // ── Keybind row ────────────────────────────────────────────────────────────
+    private boolean listeningForKey = false;  // 等待玩家按鍵
+    private int keyBtnX, keyBtnY;
+    private static final int KEY_BTN_W = 100;
+    private static final int KEY_BTN_H = 18;
 
     // ── Constructor ───────────────────────────────────────────────────────────
 
@@ -48,67 +53,82 @@ public class ConfigScreen extends Screen {
         int ctrlX   = cx + CTRL_OFFSET;
         int sliderW = 180;
 
-        // ── Language row (y=30) — label is always English "Language" ──────────
+        // Language row (y=30) — label is ALWAYS English "Language"
         langBtnX = ctrlX;
         langBtnY = 30;
-        // The button text shows the current language's native display name.
-        // Clicking toggles the dropdown open/close.
         addDrawableChild(ButtonWidget.builder(
                 Text.literal(LangManager.getLanguage().displayName + " \u25be"),
-                btn -> langDropdownOpen = !langDropdownOpen
+                btn -> { langDropdownOpen = !langDropdownOpen; listeningForKey = false; }
         ).dimensions(langBtnX, langBtnY, LANG_BTN_W, LANG_BTN_H).build());
 
-        int y = 56; // everything below shifts down one row (26px) compared to original
+        int y = 56;
 
-        // ── Line color ────────────────────────────────────────────────────────
-        addDrawableChild(ButtonWidget.builder(Text.literal(LangManager.pickColor()), btn ->
+        // Line color
+        addDrawableChild(ButtonWidget.builder(Text.literal(LangManager.pickColor()), btn -> {
+                listeningForKey = false;
                 client.setScreen(new ColorPickerScreen(this, lineR, lineG, lineB, rgb -> {
                     lineR = rgb[0]; lineG = rgb[1]; lineB = rgb[2];
                     cfg.lineR = lineR; cfg.lineG = lineG; cfg.lineB = lineB;
-                }))
-        ).dimensions(ctrlX, y, 100, 18).build());
+                }));
+        }).dimensions(ctrlX, y, 100, 18).build());
         y += 26;
 
-        // ── Line width ────────────────────────────────────────────────────────
+        // Line width
         addDrawableChild(makeSlider(ctrlX, y, sliderW, cfg.lineWidth / 10.0,
                 v -> cfg.lineWidth = (float)(v * 10)));
         y += 26;
 
-        // ── Line opacity ──────────────────────────────────────────────────────
+        // Line opacity
         addDrawableChild(makeSlider(ctrlX, y, sliderW, cfg.lineAlpha,
                 v -> cfg.lineAlpha = (float)v));
         y += 36;
 
-        // ── Arrow color ───────────────────────────────────────────────────────
-        addDrawableChild(ButtonWidget.builder(Text.literal(LangManager.pickColor()), btn ->
+        // Arrow color
+        addDrawableChild(ButtonWidget.builder(Text.literal(LangManager.pickColor()), btn -> {
+                listeningForKey = false;
                 client.setScreen(new ColorPickerScreen(this, arrowR, arrowG, arrowB, rgb -> {
                     arrowR = rgb[0]; arrowG = rgb[1]; arrowB = rgb[2];
                     cfg.arrowR = arrowR; cfg.arrowG = arrowG; cfg.arrowB = arrowB;
-                }))
-        ).dimensions(ctrlX, y, 100, 18).build());
+                }));
+        }).dimensions(ctrlX, y, 100, 18).build());
         y += 26;
 
-        // ── Arrow width ───────────────────────────────────────────────────────
+        // Arrow width
         addDrawableChild(makeSlider(ctrlX, y, sliderW, cfg.arrowWidth / 10.0,
                 v -> cfg.arrowWidth = (float)(v * 10)));
         y += 26;
 
-        // ── Arrow spacing ─────────────────────────────────────────────────────
+        // Arrow spacing
         addDrawableChild(makeSlider(ctrlX, y, sliderW, cfg.arrowSpacing / 30.0,
                 v -> cfg.arrowSpacing = (float)(v * 30)));
         y += 26;
 
-        // ── Arrow angle ───────────────────────────────────────────────────────
+        // Arrow angle
         addDrawableChild(makeSlider(ctrlX, y, sliderW, cfg.arrowAngle / 90.0,
                 v -> cfg.arrowAngle = (float)(v * 90)));
         y += 26;
 
-        // ── Arrow opacity ─────────────────────────────────────────────────────
+        // Arrow opacity
         addDrawableChild(makeSlider(ctrlX, y, sliderW, cfg.arrowAlpha,
                 v -> cfg.arrowAlpha = (float)v));
         y += 36;
 
-        // ── Save / Cancel ─────────────────────────────────────────────────────
+        // ── Keybind row ────────────────────────────────────────────────────────
+        keyBtnX = ctrlX;
+        keyBtnY = y;
+        // 按鈕本身只是一個點擊觸發，實際繪製在 render()
+        addDrawableChild(ButtonWidget.builder(Text.empty(), btn -> {
+            listeningForKey = !listeningForKey;
+            langDropdownOpen = false;
+        }).dimensions(keyBtnX, keyBtnY, KEY_BTN_W, KEY_BTN_H).build());
+        // 重設按鈕（預設 "."，GLFW code 46）
+        addDrawableChild(ButtonWidget.builder(Text.literal(LangManager.resetKey()), btn -> {
+            cfg.guideKeyCode = 46;
+            listeningForKey = false;
+        }).dimensions(keyBtnX + KEY_BTN_W + 4, keyBtnY, 60, KEY_BTN_H).build());
+        y += 36;
+
+        // Save / Cancel
         addDrawableChild(ButtonWidget.builder(Text.literal(LangManager.save()), btn -> {
             cfg.language = LangManager.getLanguage().code;
             cfg.save();
@@ -131,73 +151,74 @@ public class ConfigScreen extends Screen {
         int labelX = cx + LX_OFFSET;
         int y      = 30;
 
-        // ── Language label (ALWAYS English) ───────────────────────────────────
+        // Language label — always English
         ctx.drawTextWithShadow(textRenderer, "Language", labelX, y + 4, 0xFFFFFFFF);
         y += 26;
 
-        // ── Other setting labels (localised) ──────────────────────────────────
-        ctx.drawTextWithShadow(textRenderer, LangManager.lineColor(),   labelX, y + 4, 0xFFFFFFFF);
+        ctx.drawTextWithShadow(textRenderer, LangManager.lineColor(),    labelX, y + 4, 0xFFFFFFFF);
         y += 26;
-        ctx.drawTextWithShadow(textRenderer, LangManager.lineWidth(),   labelX, y + 4, 0xFFFFFFFF);
+        ctx.drawTextWithShadow(textRenderer, LangManager.lineWidth(),    labelX, y + 4, 0xFFFFFFFF);
         y += 26;
-        ctx.drawTextWithShadow(textRenderer, LangManager.lineOpacity(), labelX, y + 4, 0xFFFFFFFF);
+        ctx.drawTextWithShadow(textRenderer, LangManager.lineOpacity(),  labelX, y + 4, 0xFFFFFFFF);
         y += 36;
-        ctx.drawTextWithShadow(textRenderer, LangManager.arrowColor(),  labelX, y + 4, 0xFFFFFFFF);
+        ctx.drawTextWithShadow(textRenderer, LangManager.arrowColor(),   labelX, y + 4, 0xFFFFFFFF);
         y += 26;
-        ctx.drawTextWithShadow(textRenderer, LangManager.arrowWidth(),  labelX, y + 4, 0xFFFFFFFF);
+        ctx.drawTextWithShadow(textRenderer, LangManager.arrowWidth(),   labelX, y + 4, 0xFFFFFFFF);
         y += 26;
-        ctx.drawTextWithShadow(textRenderer, LangManager.arrowSpacing(),labelX, y + 4, 0xFFFFFFFF);
+        ctx.drawTextWithShadow(textRenderer, LangManager.arrowSpacing(), labelX, y + 4, 0xFFFFFFFF);
         y += 26;
-        ctx.drawTextWithShadow(textRenderer, LangManager.arrowAngle(),  labelX, y + 4, 0xFFFFFFFF);
+        ctx.drawTextWithShadow(textRenderer, LangManager.arrowAngle(),   labelX, y + 4, 0xFFFFFFFF);
         y += 26;
-        ctx.drawTextWithShadow(textRenderer, LangManager.arrowOpacity(),labelX, y + 4, 0xFFFFFFFF);
+        ctx.drawTextWithShadow(textRenderer, LangManager.arrowOpacity(), labelX, y + 4, 0xFFFFFFFF);
+        y += 36;
+        ctx.drawTextWithShadow(textRenderer, LangManager.showGuideRoute(), labelX, y + 4, 0xFFFFFFFF);
 
-        // Draw all widget children
+        // Render widgets first
         super.render(ctx, mouseX, mouseY, delta);
 
-        // ── Colour previews (drawn after widgets so they sit on top) ──────────
+        // Colour previews
         int ctrlX    = cx + CTRL_OFFSET;
         int previewX = ctrlX + 104;
         drawPreview(ctx, lineR,  lineG,  lineB,  previewX, 56);
         drawPreview(ctx, arrowR, arrowG, arrowB, previewX, 56 + 26 + 26 + 36);
 
-        // ── Language dropdown panel (drawn last — topmost layer) ───────────────
-        if (langDropdownOpen) {
-            drawLangDropdown(ctx, mouseX, mouseY);
-        }
+        // ── Keybind button custom rendering (drawn over widget) ────────────────
+        String keyLabel = listeningForKey
+            ? "> " + LangManager.pressAKey() + " <"
+            : WynnMazeClient.getGuideKeyName();
+        int keyBtnColor = listeningForKey ? 0xFFFFFF44 : 0xFFAAAAAA;
+        // outline
+        ctx.fill(keyBtnX - 1,           keyBtnY - 1,          keyBtnX + KEY_BTN_W + 1, keyBtnY,              0xFF555555);
+        ctx.fill(keyBtnX - 1,           keyBtnY + KEY_BTN_H,  keyBtnX + KEY_BTN_W + 1, keyBtnY + KEY_BTN_H + 1, 0xFF555555);
+        ctx.fill(keyBtnX - 1,           keyBtnY,              keyBtnX,                  keyBtnY + KEY_BTN_H,  0xFF555555);
+        ctx.fill(keyBtnX + KEY_BTN_W,   keyBtnY,              keyBtnX + KEY_BTN_W + 1, keyBtnY + KEY_BTN_H,  0xFF555555);
+        // centre text
+        int textW = textRenderer.getWidth(keyLabel);
+        int textX = keyBtnX + (KEY_BTN_W - textW) / 2;
+        ctx.drawTextWithShadow(textRenderer, keyLabel, textX, keyBtnY + 5, keyBtnColor);
+
+        // Dropdown (topmost layer)
+        if (langDropdownOpen) drawLangDropdown(ctx, mouseX, mouseY);
     }
 
-    // ── Dropdown rendering ────────────────────────────────────────────────────
+    // ── Keyboard input (for keybind listening) — poll via GLFW in tick ─────────
 
-    private void drawLangDropdown(DrawContext ctx, int mouseX, int mouseY) {
-        int panelTop  = langBtnY + LANG_BTN_H + 1;
-        int panelH    = LANGS.length * ITEM_H + 4;
-        int panelX    = langBtnX;
-        int panelW    = LANG_BTN_W;
-
-        // Panel background + border
-        ctx.fill(panelX,         panelTop,          panelX + panelW,     panelTop + panelH, 0xFF1A1A1A);
-        ctx.fill(panelX,         panelTop,          panelX + panelW,     panelTop + 1,      0xFFAAAAAA);
-        ctx.fill(panelX,         panelTop + panelH - 1, panelX + panelW, panelTop + panelH, 0xFFAAAAAA);
-        ctx.fill(panelX,         panelTop,          panelX + 1,          panelTop + panelH, 0xFFAAAAAA);
-        ctx.fill(panelX + panelW - 1, panelTop,    panelX + panelW,     panelTop + panelH, 0xFFAAAAAA);
-
-        int itemY = panelTop + 2;
-        for (LangManager.Language lang : LANGS) {
-            boolean selected   = lang == LangManager.getLanguage();
-            boolean hovered    = mouseX >= panelX && mouseX <= panelX + panelW - 1
-                              && mouseY >= itemY   && mouseY <= itemY + ITEM_H - 1;
-
-            // Highlight background
-            if (selected) {
-                ctx.fill(panelX + 1, itemY, panelX + panelW - 1, itemY + ITEM_H, 0xFF3A3A6A);
-            } else if (hovered) {
-                ctx.fill(panelX + 1, itemY, panelX + panelW - 1, itemY + ITEM_H, 0xFF333333);
+    @Override
+    public void tick() {
+        super.tick();
+        if (!listeningForKey || client == null) return;
+        long handle = client.getWindow().getHandle();
+        // 掃描所有常用按鍵（GLFW_KEY_SPACE=32 到 GLFW_KEY_LAST=348）
+        for (int k = 32; k <= 348; k++) {
+            if (org.lwjgl.glfw.GLFW.glfwGetKey(handle, k) == org.lwjgl.glfw.GLFW.GLFW_PRESS) {
+                if (k == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+                    listeningForKey = false;
+                } else {
+                    cfg.guideKeyCode = k;
+                    listeningForKey = false;
+                }
+                break;
             }
-
-            int textColor = selected ? 0xFFFFFF55 : (hovered ? 0xFFFFFFFF : 0xFFCCCCCC);
-            ctx.drawTextWithShadow(textRenderer, lang.displayName, panelX + 5, itemY + 3, textColor);
-            itemY += ITEM_H;
         }
     }
 
@@ -206,28 +227,59 @@ public class ConfigScreen extends Screen {
     @Override
     public boolean mouseClicked(Click click, boolean bl) {
         double mouseX = click.x(), mouseY = click.y();
-        // When dropdown is open intercept ALL clicks before regular children.
+
+        // 點擊其他地方取消 listening
+        if (listeningForKey) {
+            boolean onKeyBtn = mouseX >= keyBtnX && mouseX <= keyBtnX + KEY_BTN_W
+                            && mouseY >= keyBtnY && mouseY <= keyBtnY + KEY_BTN_H;
+            if (!onKeyBtn) { listeningForKey = false; return true; }
+        }
+
         if (langDropdownOpen) {
             int panelTop = langBtnY + LANG_BTN_H + 1;
             int itemY    = panelTop + 2;
             for (LangManager.Language lang : LANGS) {
                 if (mouseX >= langBtnX && mouseX <= langBtnX + LANG_BTN_W
                  && mouseY >= itemY    && mouseY <= itemY + ITEM_H) {
-                    // Language selected
                     LangManager.setLanguage(lang);
                     cfg.language = lang.code;
                     langDropdownOpen = false;
-                    // Re-open screen to refresh all button/label text
                     client.setScreen(new ConfigScreen(parent));
                     return true;
                 }
                 itemY += ITEM_H;
             }
-            // Click outside dropdown → close it, consume the click
             langDropdownOpen = false;
             return true;
         }
+
         return super.mouseClicked(click, bl);
+    }
+
+    // ── Dropdown rendering ────────────────────────────────────────────────────
+
+    private void drawLangDropdown(DrawContext ctx, int mouseX, int mouseY) {
+        int panelTop = langBtnY + LANG_BTN_H + 1;
+        int panelH   = LANGS.length * ITEM_H + 4;
+        int panelW   = LANG_BTN_W;
+
+        ctx.fill(langBtnX,               panelTop,              langBtnX + panelW,     panelTop + panelH, 0xFF1A1A1A);
+        ctx.fill(langBtnX,               panelTop,              langBtnX + panelW,     panelTop + 1,      0xFFAAAAAA);
+        ctx.fill(langBtnX,               panelTop + panelH - 1, langBtnX + panelW,     panelTop + panelH, 0xFFAAAAAA);
+        ctx.fill(langBtnX,               panelTop,              langBtnX + 1,          panelTop + panelH, 0xFFAAAAAA);
+        ctx.fill(langBtnX + panelW - 1,  panelTop,              langBtnX + panelW,     panelTop + panelH, 0xFFAAAAAA);
+
+        int itemY = panelTop + 2;
+        for (LangManager.Language lang : LANGS) {
+            boolean selected = lang == LangManager.getLanguage();
+            boolean hovered  = mouseX >= langBtnX && mouseX <= langBtnX + panelW - 1
+                            && mouseY >= itemY    && mouseY <= itemY + ITEM_H - 1;
+            if (selected) ctx.fill(langBtnX + 1, itemY, langBtnX + panelW - 1, itemY + ITEM_H, 0xFF3A3A6A);
+            else if (hovered) ctx.fill(langBtnX + 1, itemY, langBtnX + panelW - 1, itemY + ITEM_H, 0xFF333333);
+            int textColor = selected ? 0xFFFFFF55 : (hovered ? 0xFFFFFFFF : 0xFFCCCCCC);
+            ctx.drawTextWithShadow(textRenderer, lang.displayName, langBtnX + 5, itemY + 3, textColor);
+            itemY += ITEM_H;
+        }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

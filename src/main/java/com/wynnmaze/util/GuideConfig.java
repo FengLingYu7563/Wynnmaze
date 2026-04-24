@@ -24,6 +24,8 @@ public class GuideConfig {
     public float arrowAngle = 35f;
     // 語言
     public String language = "en";
+    // 快捷鍵（GLFW key code，預設 46 = "."）
+    public int guideKeyCode = 46;
 
     private static GuideConfig INSTANCE = null;
 

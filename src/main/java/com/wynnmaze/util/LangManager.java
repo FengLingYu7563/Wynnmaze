@@ -6,7 +6,7 @@ package com.wynnmaze.util;
  */
 public class LangManager {
 
-    // ── Languages ──────────────────────────────────────────────────────────────
+    // ── Languages ─────────────────────────────────────────────────────────────
 
     public enum Language {
         EN    ("en",    "English"),
@@ -43,7 +43,7 @@ public class LangManager {
     public static Language getLanguage()           { return current; }
     public static void setFromCode(String code)    { current = Language.fromCode(code); }
 
-    // ── Strings ────────────────────────────────────────────────────────────────
+    // ── Config UI strings ─────────────────────────────────────────────────────
 
     public static String configTitle() {
         return switch (current) {
@@ -252,6 +252,154 @@ public class LangManager {
             case PT    -> "Confirmar";
             case PL    -> "Potwierdź";
             default    -> "Confirm";
+        };
+    }
+
+    // ── Chat / HUD strings ────────────────────────────────────────────────────
+
+    /**
+     * 訊息第二行：點擊或按快捷鍵顯示路線。
+     * keyName 會動態帶入目前綁定的按鍵名稱（例如 "."）。
+     */
+    public static String clickToGuide(String keyName) {
+        return switch (current) {
+            case ZH_TW -> "[點擊訊息或 " + keyName + " 鍵顯示路線]";
+            case ZH_CN -> "[点击消息或 " + keyName + " 键显示路线]";
+            case JA    -> "[クリックか " + keyName + " キーでルート表示]";
+            case KO    -> "[클릭 또는 " + keyName + " 키로 경로 표시]";
+            case DE    -> "[Klicken oder " + keyName + " für Route]";
+            case FR    -> "[Cliquer ou " + keyName + " pour itinéraire]";
+            case ES    -> "[Clic o " + keyName + " para ruta]";
+            case PT    -> "[Clique ou " + keyName + " para rota]";
+            case PL    -> "[Kliknij lub " + keyName + " aby trasę]";
+            default    -> "[Click or press " + keyName + " to show route]";
+        };
+    }
+
+    /** Chat message: route is now displayed */
+    public static String routeShown() {
+        return switch (current) {
+            case ZH_TW -> "已顯示路線 \u2192 ";
+            case ZH_CN -> "已显示路线 \u2192 ";
+            case JA    -> "ルート表示中 \u2192 ";
+            case KO    -> "경로 표시됨 \u2192 ";
+            case DE    -> "Route angezeigt \u2192 ";
+            case FR    -> "Itinéraire affiché \u2192 ";
+            case ES    -> "Ruta mostrada \u2192 ";
+            case PT    -> "Rota exibida \u2192 ";
+            case PL    -> "Trasa wyświetlona \u2192 ";
+            default    -> "Route shown \u2192 ";
+        };
+    }
+
+    /** HUD: exit found notification */
+    public static String exitFound() {
+        return switch (current) {
+            case ZH_TW -> "已找到出口！ ";
+            case ZH_CN -> "已找到出口！ ";
+            case JA    -> "出口発見！ ";
+            case KO    -> "출구 발견! ";
+            case DE    -> "Ausgang gefunden! ";
+            case FR    -> "Sortie trouvée ! ";
+            case ES    -> "¡Salida encontrada! ";
+            case PT    -> "Saída encontrada! ";
+            case PL    -> "Znaleziono wyjście! ";
+            default    -> "Exit found! ";
+        };
+    }
+
+    /** Keybind reset button label */
+    public static String resetKey() {
+        return switch (current) {
+            case ZH_TW -> "重設";
+            case ZH_CN -> "重置";
+            case JA    -> "リセット";
+            case KO    -> "초기화";
+            case DE    -> "Zurücksetzen";
+            case FR    -> "Réinitialiser";
+            case ES    -> "Restablecer";
+            case PT    -> "Redefinir";
+            case PL    -> "Resetuj";
+            default    -> "Reset";
+        };
+    }
+
+    /** Keybind listening prompt: shown inside the button while waiting for input */
+    public static String pressAKey() {
+        return switch (current) {
+            case ZH_TW -> "按下按鍵";
+            case ZH_CN -> "按下按键";
+            case JA    -> "キーを押して";
+            case KO    -> "키를 누르세요";
+            case DE    -> "Taste drücken";
+            case FR    -> "Appuyez sur une touche";
+            case ES    -> "Presiona tecla";
+            case PT    -> "Pressione tecla";
+            case PL    -> "Naciśnij klawisz";
+            default    -> "Press a key";
+        };
+    }
+
+    /** Config label: the keybinding row */
+    public static String showGuideRoute() {        return switch (current) {
+            case ZH_TW -> "顯示路線 快捷鍵";
+            case ZH_CN -> "显示路线 快捷键";
+            case JA    -> "ルート表示 ショートカット";
+            case KO    -> "경로 표시 단축키";
+            case DE    -> "Route Taste";
+            case FR    -> "Touche itinéraire";
+            case ES    -> "Tecla de ruta";
+            case PT    -> "Tecla de rota";
+            case PL    -> "Klawisz trasy";
+            default    -> "Show Guide Route";
+        };
+    }
+
+    /** Chat: route from teammate's verified share. {sender} 由呼叫端代入。 */
+    public static String routeFromTeammate(String sender) {
+        return switch (current) {
+            case ZH_TW -> "依 " + sender + " 提供的座標顯示路線 \u2192 ";
+            case ZH_CN -> "依 " + sender + " 提供的坐标显示路线 \u2192 ";
+            case JA    -> sender + " さんの座標でルート表示 \u2192 ";
+            case KO    -> sender + " 님 좌표로 경로 표시 \u2192 ";
+            case DE    -> "Route nach " + sender + " \u2192 ";
+            case FR    -> "Itinéraire d'après " + sender + " \u2192 ";
+            case ES    -> "Ruta según " + sender + " \u2192 ";
+            case PT    -> "Rota de " + sender + " \u2192 ";
+            case PL    -> "Trasa od " + sender + " \u2192 ";
+            default    -> "Route from " + sender + " \u2192 ";
+        };
+    }
+
+    /** Chat: a new version is available. {tag} 由呼叫端代入。 */
+    public static String updateAvailable(String tag) {
+        return switch (current) {
+            case ZH_TW -> "有新版本可用：" + tag;
+            case ZH_CN -> "有新版本可用：" + tag;
+            case JA    -> "新しいバージョン: " + tag;
+            case KO    -> "새 버전 있음: " + tag;
+            case DE    -> "Neue Version verfügbar: " + tag;
+            case FR    -> "Nouvelle version : " + tag;
+            case ES    -> "Nueva versión: " + tag;
+            case PT    -> "Nova versão: " + tag;
+            case PL    -> "Nowa wersja: " + tag;
+            default    -> "New version available: " + tag;
+        };
+    }
+
+    /** Chat: open release page. */
+    public static String openReleasePage() {
+        return switch (current) {
+            case ZH_TW -> "開啟下載頁面";
+            case ZH_CN -> "打开下载页面";
+            case JA    -> "ダウンロードページを開く";
+            case KO    -> "다운로드 페이지 열기";
+            case DE    -> "Downloadseite öffnen";
+            case FR    -> "Ouvrir la page";
+            case ES    -> "Abrir página";
+            case PT    -> "Abrir página";
+            case PL    -> "Otwórz stronę";
+            default    -> "Open release page";
         };
     }
 }
